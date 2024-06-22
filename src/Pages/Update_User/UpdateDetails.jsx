@@ -207,57 +207,7 @@ const UpdateDetails = () => {
                     </Container>
                 </form >
 
-                <Typography variant='h6' sx={{ margin: '20px 0', fontWeight: 'bold', color: '#1976d2' }}>Reset Password</Typography>
-                <form onSubmit={handleResetPassword}>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} >
-                            <TextField
-                                label="Current Password"
-                                name='currentPassword'
-                                type={showPassword ? "text" : "password"}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end" onClick={handleClickShowPassword} sx={{ cursor: 'pointer' }}>
-                                            {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
-                                        </InputAdornment>
-                                    )
-                                }}
-                                value={password.currentPassword || ''}
-                                onChange={
-                                    (e) => setPassword({
-                                        ...password, [e.target.name]: e.target.value
-                                    })
-                                }
-                                variant="outlined"
-                                fullWidth />
-                        </Grid>
-                        <Grid item xs={12} >
-                            <TextField
-                                label="New Password"
-                                name='newPassword'
-                                type={showNewPassword ? "text" : "password"}
-                                id="password"
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end" onClick={() => setShowNewPassword(!showNewPassword)} sx={{ cursor: 'pointer' }}>
-                                            {showNewPassword ? <RiEyeFill /> : <RiEyeOffFill />}
-                                        </InputAdornment>
-                                    )
-                                }}
-                                value={password.newPassword || ''}
-                                onChange={
-                                    (e) => setPassword({
-                                        ...password, [e.target.name]: e.target.value
-                                    })
-                                }
-                                variant="outlined"
-                                fullWidth />
-                        </Grid>
-                    </Grid>
-                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', margin: "25px 0", width: '100%' }}>
-                        <Button variant='contained' color='primary' endIcon={<RiLockPasswordLine />} type='submit'>Reset</Button>
-                    </Box>
-                </form>
+                
                 <Box sx={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', margin: "25px 0", width: '100%' }}>
                     <Typography variant='h6'>Delete Your Account?</Typography>
                     <Button variant='contained' color='error' endIcon={<AiFillDelete />} onClick={() => setOpenAlert(true)}>Delete</Button>

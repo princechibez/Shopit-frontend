@@ -35,11 +35,11 @@ function App() {
         <div className='margin'>
           <Routes>
             {/*User Routes  */}
-            <Route path='/' index element={<HomePage />} />
+            <Route path='/' index element={<HomePage />} /> //done
             <Route path="/login" element={< Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/Detail/type/:cat/:id' element={<ProductDetail />} />
-            <Route path='product/type/:cat' element={<SingleCategory />} />
+            <Route path='product/type/:cat' element={<SingleCategory />} /> //here
             <Route path='/cart' element={<Cart />} />
             <Route path='/wishlist' element={<Wishlist />} />
             <Route path='/checkout' element={<CheckoutForm />} />
