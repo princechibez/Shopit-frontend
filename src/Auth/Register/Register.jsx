@@ -1,82 +1,141 @@
-import '../Login/login.css'
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import { Link, useNavigate } from 'react-router-dom'
-import { Avatar, Button, Checkbox, CssBaseline, FormControlLabel, Grid, InputAdornment, TextField, Typography } from '@mui/material'
-import { MdLockOutline } from 'react-icons/md'
-import { Box, Container } from '@mui/system'
-import { toast } from 'react-toastify'
-import CopyRight from '../../Components/CopyRight/CopyRight'
-import { RiEyeFill, RiEyeOffFill } from 'react-icons/ri';
-
-
+import "../Login/login.css";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import {
+  Avatar,
+  Button,
+  Checkbox,
+  CssBaseline,
+  FormControlLabel,
+  Grid,
+  InputAdornment,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { MdLockOutline } from "react-icons/md";
+import { Box, Container } from "@mui/system";
+import { toast } from "react-toastify";
+import CopyRight from "../../Components/CopyRight/CopyRight";
+import { RiEyeFill, RiEyeOffFill } from "react-icons/ri";
 
 const Register = () => {
-
-  const [credentials, setCredentials] = useState({ firstName: "", lastName: '', email: "", phoneNumber: '', password: "" })
+  const [credentials, setCredentials] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    password: "",
+  });
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const handleOnChange = (e) => {
-    setCredentials({ ...credentials, [e.target.name]: e.target.value })
-  }
+    setCredentials({ ...credentials, [e.target.name]: e.target.value });
+  };
   useEffect(() => {
-    let auth = localStorage.getItem('Authorization');
+    let auth = localStorage.getItem("Authorization");
     if (auth) {
-      navigate("/")
+      navigate("/");
     }
-  }, [])
+  }, []);
   const handleSubmit = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
+    const toastId = toast.loading("Registering...");
     let phoneRegex = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/gm;
-    let emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    let emailRegex =
+      /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     try {
-      if (!credentials.email && !credentials.firstName && !credentials.password && !credentials.phoneNumber && !credentials.lastName) {
-        toast.error("All fields are required", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.firstName.length < 1 || credentials.lastName.length < 1) {
-        toast.error("Please enter valid name", { autoClose: 500, theme: 'colored' })
-      }
-      else if (emailRegex.test(credentials.email)===false) {
-        toast.error("Please enter valid email", { autoClose: 500, theme: 'colored' })
+      if (
+        !credentials.email &&
+        !credentials.firstName &&
+        !credentials.password &&
+        !credentials.phoneNumber &&
+        !credentials.lastName
+      ) {
+        toast.error("All fields are required", {
+          autoClose: 500,
+          theme: "colored",
+        });
+      } else if (
+        credentials.firstName.length < 1 ||
+        credentials.lastName.length < 1
+      ) {
+        toast.error("Please enter valid name", {
+          autoClose: 500,
+          theme: "colored",
+        });
+      } else if (emailRegex.test(credentials.email) === false) {
+        toast.error("Please enter valid email", {
+          autoClose: 500,
+          theme: "colored",
+        });
       }
       // else if (phoneRegex.test(credentials.phoneNumber)===false) {
       //   toast.error("Please enter a valid phone number", { autoClose: 500, theme: 'colored' })
       //   console.log(1);
       // }
       else if (credentials.password.length < 5) {
-        toast.error("Please enter password with more than 5 characters", { autoClose: 500, theme: 'colored' })
-      }
-      else if (credentials.email && credentials.firstName && credentials.lastName && credentials.phoneNumber && credentials.password) {
-        const sendAuth = await axios.post(`${process.env.REACT_APP_REGISTER}`,
-          {
-            firstName: credentials.firstName,
-            lastName: credentials.lastName,
-            email: credentials.email,
-            phoneNumber: credentials.phoneNumber,
-            password: credentials.password,
-          })
-        const receive = await sendAuth.data
+        toast.error("Please enter password with more than 5 characters", {
+          autoClose: 500,
+          theme: "colored",
+        });
+      } else if (
+        credentials.email &&
+        credentials.firstName &&
+        credentials.lastName &&
+        credentials.phoneNumber &&
+        credentials.password
+      ) {
+        const sendAuth = await axios.post(`${process.env.REACT_APP_REGISTER}`, {
+          firstName: credentials.firstName,
+          lastName: credentials.lastName,
+          email: credentials.email,
+          phoneNumber: credentials.phoneNumber,
+          password: credentials.password,
+        });
+        const receive = await sendAuth.data;
         if (receive.success === true) {
-          toast.success("Registered Successfully", { autoClose: 500, theme: 'colored' })
-          localStorage.setItem('Authorization', receive.authToken)
-          navigate('/')
-          console.log(receive);
-        }
-        else {
-          toast.error("Something went wrong, Please try again", { autoClose: 500, theme: 'colored' })
-          navigate('/')
+          toast.update(toastId, {
+            render: "Verification code sent to email",
+            type: "success",
+            isLoading: false,
+            autoClose: 1000,
+            theme: "colored",
+          });
+          localStorage.setItem("Authorization", receive.authToken);
+          navigate(`/verification?email=${credentials.email}`);
+        } else {
+          toast.update(toastId, {
+            render: "Something went wrong, Please try again",
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
+            theme: "colored",
+          });
+          navigate("/");
         }
       }
     } catch (error) {
-      toast.error(error.response.data.error[0].msg, { autoClose: 500, theme: 'colored' })
-
+      error.response.data.error.length === 1
+        ? toast.update(toastId, {
+            render: error.response.data.error[0].msg,
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
+            theme: "colored",
+          })
+        : toast.update(toastId, {
+            render: error.response.data.error,
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
+            theme: "colored",
+          });
     }
-
-  }
-
+  };
 
   return (
     <>
@@ -85,18 +144,23 @@ const Register = () => {
         <Box
           sx={{
             marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: '#1976d2' }}>
+          <Avatar sx={{ m: 1, bgcolor: "#1976d2" }}>
             <MdLockOutline />
           </Avatar>
           <Typography component="h1" variant="h5">
             Sign up
           </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+          <Box
+            component="form"
+            noValidate
+            onSubmit={handleSubmit}
+            sx={{ mt: 3 }}
+          >
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -133,7 +197,6 @@ const Register = () => {
                   value={credentials.email}
                   onChange={handleOnChange}
                   autoComplete="email"
-
                 />
               </Grid>
               <Grid item xs={12}>
@@ -145,7 +208,7 @@ const Register = () => {
                   name="phoneNumber"
                   value={credentials.phoneNumber}
                   onChange={handleOnChange}
-                  inputMode='numeric'
+                  inputMode="numeric"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -158,10 +221,14 @@ const Register = () => {
                   id="password"
                   InputProps={{
                     endAdornment: (
-                      <InputAdornment position="end" onClick={handleClickShowPassword} sx={{ cursor: 'pointer' }}>
+                      <InputAdornment
+                        position="end"
+                        onClick={handleClickShowPassword}
+                        sx={{ cursor: "pointer" }}
+                      >
                         {showPassword ? <RiEyeFill /> : <RiEyeOffFill />}
                       </InputAdornment>
-                    )
+                    ),
                   }}
                   value={credentials.password}
                   onChange={handleOnChange}
@@ -170,7 +237,9 @@ const Register = () => {
               </Grid>
               <Grid item xs={12}>
                 <FormControlLabel
-                  control={<Checkbox value="allowExtraEmails" color="primary" />}
+                  control={
+                    <Checkbox value="allowExtraEmails" color="primary" />
+                  }
                   label="I want to receive inspiration, marketing promotions and updates via email."
                 />
               </Grid>
@@ -186,7 +255,7 @@ const Register = () => {
             <Grid container justifyContent="flex-end">
               <Grid item>
                 Already have an account?
-                <Link to='/login' style={{ color: '#1976d2', marginLeft: 3 }}>
+                <Link to="/login" style={{ color: "#1976d2", marginLeft: 3 }}>
                   Sign in
                 </Link>
               </Grid>
@@ -196,7 +265,7 @@ const Register = () => {
         <CopyRight sx={{ mt: 5 }} />
       </Container>
     </>
-  )
-}
+  );
+};
 
-export default Register
+export default Register;

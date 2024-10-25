@@ -40,6 +40,7 @@ const Login = () => {
   }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Logging in...");
     let emailRegex =
       /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     try {
@@ -65,15 +66,21 @@ const Login = () => {
         });
         const receive = await sendAuth.data;
         if (receive.success === true) {
-          toast.success("Login Successfully", {
-            autoClose: 500,
+          toast.update(toastId, {
+            render: "Verification code sent to email",
+            type: "success",
+            isLoading: false,
+            autoClose: 2000,
             theme: "colored",
           });
           localStorage.setItem("Authorization", receive.authToken);
-          navigate("/");
+          navigate(`/verification?email=${credentials.email}`);
         } else {
-          toast.error("Something went wrong, Please try again", {
-            autoClose: 500,
+          toast.update(toastId, {
+            render: "Something went wrong, Please try again",
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
             theme: "colored",
           });
           // navigate("/");
@@ -81,12 +88,18 @@ const Login = () => {
       }
     } catch (error) {
       error.response.data.error.length === 1
-        ? toast.error(error.response.data.error[0].msg, {
-            autoClose: 500,
+        ? toast.update(toastId, {
+            render: error.response.data.error[0].msg,
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
             theme: "colored",
           })
-        : toast.error(error.response.data.error, {
-            autoClose: 500,
+        : toast.update(toastId, {
+            render: error.response.data.error,
+            type: "error",
+            isLoading: false,
+            autoClose: 1000,
             theme: "colored",
           });
     }
